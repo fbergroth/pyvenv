@@ -424,11 +424,19 @@ back to the default of $WORKON_HOME or even just ~/.virtualenvs/."
   (or (getenv "VIRTUALENVWRAPPER_HOOK_DIR")
       (pyvenv-workon-home)))
 
+(defun pyvenv-pyenv-versions-dir ()
+  "Return directory of pyenv versions."
+  (when (executable-find "pyenv")
+    (let* ((output (shell-command-to-string "pyenv root"))
+           (pyenv-root (replace-regexp-in-string "\n" "" output)))
+      (expand-file-name "versions" pyenv-root))))
+
 (defun pyvenv-workon-home ()
   "Return the current workon home.
 
 This is the value of $WORKON_HOME or ~/.virtualenvs."
   (or (getenv "WORKON_HOME")
+      (pyvenv-pyenv-versions-dir)
       (expand-file-name "~/.virtualenvs")))
 
 ;;; Compatibility
